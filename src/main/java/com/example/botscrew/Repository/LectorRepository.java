@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface LectorRepository extends JpaRepository<Lector,Long> {
     List<Lector> findByDepartmentsName(String departmentName);
     List<Lector> findByFirstNameAndLastName(String firstname, String lastname);
-    @Query(value = "SELECT * FROM lector WHERE LOWER(first_name) LIKE %:template% OR LOWER(last_name) LIKE %:template%", nativeQuery = true)
+    @Query("SELECT l FROM Lector l WHERE LOWER(l.firstName) LIKE :template OR LOWER(l.lastName) LIKE :template")
     List<Lector> globalSearch(@Param("template") String template);
 }

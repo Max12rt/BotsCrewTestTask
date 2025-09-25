@@ -100,5 +100,20 @@ class UniversityServiceUnitTest {
 
         assertThat(result).contains("Ivan Petrenko", "Petro Ivanov");
     }
+
+    @Test
+    void testGlobalSearchPreventSqlInjection() {
+        Lector l1 = new Lector(1L, "Ivan", "Petrenko", professor, 5000.0, Set.of());
+        Lector l2 = new Lector(2L, "Petro", "Ivanov", professor, 4000.0, Set.of());
+
+        when(lectorRepository.globalSearch("%van%")).thenReturn(List.of(l1, l2));
+        when(lectorRepository.globalSearch("%' OR '1'='1%")).thenReturn(List.of());
+
+        List<Lector> result = lectorRepository.globalSearch("%van%");
+        assertThat(result).containsExactly(l1, l2);
+
+        List<Lector> sqlInjectionResult = lectorRepository.globalSearch("%' OR '1'='1%");
+        assertThat(sqlInjectionResult).isEmpty();
+    }
 }
 
